@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">CalendarApp</string>
+    <string name="title_activity_add_task">Add New Task</string>
+    <string name="action_settings">Settings</string>
+    <string-array name="sound_list">
+        <item>Select Sound</item>
+        <item>Buzz</item>
+        <item>Gets in the way</item>
+        <item>Jingle Bells</item>
+        <item>Rooster</item>
+        <item>Siren</item>
+        <item>System Fault</item>
+    </string-array>
+    <string name="title_activity_view_task">ViewTaskActivity</string>
+</resources>
