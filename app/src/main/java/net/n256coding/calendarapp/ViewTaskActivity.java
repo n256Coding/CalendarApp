@@ -50,30 +50,9 @@ public class ViewTaskActivity extends AppCompatActivity {
 
 
 
-        TaskDB taskDB = new TaskDB(ViewTaskActivity.this);
-        Cursor cursor = taskDB.selectAll();
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss");
-        List<Task> taskList = new ArrayList<>();
-        while (cursor.moveToNext()){
-            Task task = new Task();
-            task.setTask_id(cursor.getInt(0));
-            task.setTask_name(cursor.getString(1));
-            task.setTask_description(cursor.getString(2));
-            try {
-                task.setTask_date(sdfDate.parse(cursor.getString(3)));
-                task.setTask_start(sdfTime.parse(cursor.getString(5)));
-                task.setTask_end(sdfTime.parse(cursor.getString(6)));
-                task.setTask_notification_time(sdfTime.parse(cursor.getString(9)));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            task.setTask_participants(cursor.getString(4));
-            task.setTask_location(cursor.getString(7));
-            task.setIs_all_day_task(Boolean.valueOf(cursor.getString(8)));
-            task.setTask_notification_sound(cursor.getString(10));
-            taskList.add(task);
-        }
+        List<Task> taskList = Task.getAllTasks(ViewTaskActivity.this);
 
         adapter = new DataAdapter(ViewTaskActivity.this, taskList);
         recyclerView.setAdapter(adapter);

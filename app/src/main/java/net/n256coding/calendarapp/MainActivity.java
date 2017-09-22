@@ -18,7 +18,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
     CalendarView calendarView;
-    Button btnToday, btnAddTask, btnViewTask;
+    Button btnToday, btnViewTask;
     DatePickerDialog.OnDateSetListener dateSetListener;
     FloatingActionButton fabAddTask;
 
@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         calendarView = (CalendarView) findViewById(R.id.calendarView);
         btnToday = (Button) findViewById(R.id.btnToday);
-        btnAddTask = (Button) findViewById(R.id.btnAddTask);
         btnViewTask = (Button) findViewById(R.id.btnViewTask);
         fabAddTask = (FloatingActionButton) findViewById(R.id.fabAddTask);
 
@@ -63,14 +62,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnAddTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intentAddTask = new Intent(MainActivity.this, AddTaskActivity.class);
-                intentAddTask.putExtra("selectedDate", calendarView.getDate());
-                startActivity(intentAddTask);
-            }
-        });
 
         btnViewTask.setOnClickListener(new View.OnClickListener() {
             @Override
