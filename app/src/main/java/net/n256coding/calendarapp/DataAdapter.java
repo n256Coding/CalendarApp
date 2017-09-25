@@ -66,6 +66,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
                         }else if(item.getItemId() == R.id.menuItem_removeTask){
                             TaskDB taskDB = new TaskDB(context);
                             if(taskDB.delete(taskId)){
+                                ReminderActivator.SuspendReminder(context, tasks.get(position));
                                 tasks.remove(position);
                                 notifyItemRemoved(position);
                                 Toast.makeText(context, "Task Removed", Toast.LENGTH_SHORT).show();

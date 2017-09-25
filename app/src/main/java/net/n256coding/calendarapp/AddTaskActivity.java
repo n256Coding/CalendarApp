@@ -267,8 +267,10 @@ public class AddTaskActivity extends AppCompatActivity {
                 }
 
                 TaskDB taskDB = new TaskDB(AddTaskActivity.this);
-                if(taskDB.insert(task))
+                if(taskDB.insert(task)){
                     Toast.makeText(AddTaskActivity.this, "Data Inserted into database", Toast.LENGTH_LONG).show();
+                    ReminderActivator.RunActivator(AddTaskActivity.this, task);
+                }
                 else
                     Toast.makeText(AddTaskActivity.this, "Error while inserting data", Toast.LENGTH_LONG).show();
             }

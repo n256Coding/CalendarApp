@@ -22,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
     DatePickerDialog.OnDateSetListener dateSetListener;
     FloatingActionButton fabAddTask;
 
+    //TODO Remove button created for testing
+    Button btnTest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
         btnToday = (Button) findViewById(R.id.btnToday);
         btnViewTask = (Button) findViewById(R.id.btnViewTask);
         fabAddTask = (FloatingActionButton) findViewById(R.id.fabAddTask);
+        //TODO Test button defined, Remove when needed
+        btnTest = (Button) findViewById(R.id.btnTest);
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -77,6 +82,15 @@ public class MainActivity extends AppCompatActivity {
                 Intent intentAddTask = new Intent(MainActivity.this, AddTaskActivity.class);
                 intentAddTask.putExtra("selectedDate", calendarView.getDate());
                 startActivity(intentAddTask);
+            }
+        });
+
+
+        //TODO Testbtn listner
+        btnTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ReminderActivator.RunActivator(MainActivity.this);
             }
         });
     }
