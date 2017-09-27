@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.n256coding.calendarapp.Database.TaskDB;
+import net.n256coding.calendarapp.Helper.ReminderActivator;
 import net.n256coding.calendarapp.Models.Task;
 
 import java.util.List;

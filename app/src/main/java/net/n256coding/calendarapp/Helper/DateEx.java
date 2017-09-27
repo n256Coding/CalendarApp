@@ -1,6 +1,4 @@
-package net.n256coding.calendarapp.Models;
-
-import org.joda.time.DateTime;
+package net.n256coding.calendarapp.Helper;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -33,31 +31,16 @@ public class DateEx extends Date{
         return dateTimeFormat.format(date);
     }
 
-    public static Date getDateOfDate(String date){
-        try {
-            return dateFormat.parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new DateEx();
+    public static Date getDateOfDate(String date) throws ParseException {
+        return dateFormat.parse(date);
     }
 
-    public static Date getDateOfTime(String date){
-        try {
-            return timeFormat.parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new DateEx();
+    public static Date getDateOfTime(String date) throws ParseException {
+        return timeFormat.parse(date);
     }
 
-    public static Date getDateOfDateTime(String date){
-        try {
-            return dateTimeFormat.parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return new DateEx();
+    public static Date getDateOfDateTime(String date) throws ParseException {
+        return dateTimeFormat.parse(date);
     }
 
     public static int getYearOf(Date date){
@@ -115,5 +98,13 @@ public class DateEx extends Date{
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
         return calendar.getTime();
+    }
+
+    public static String getFormatedDateString(String date) throws ParseException {
+        return dateFormat.format(dateFormat.parse(date));
+    }
+
+    public static String getFormatedTimeString(String time) throws ParseException {
+        return timeFormat.format(timeFormat.parse(time));
     }
 }

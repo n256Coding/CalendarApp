@@ -1,4 +1,4 @@
-package net.n256coding.calendarapp;
+package net.n256coding.calendarapp.Helper;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -12,6 +12,8 @@ import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
 import net.n256coding.calendarapp.Models.Task;
+import net.n256coding.calendarapp.R;
+import net.n256coding.calendarapp.ReminderActivity;
 
 import java.io.Serializable;
 

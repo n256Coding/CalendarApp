@@ -1,6 +1,9 @@
 package net.n256coding.calendarapp;
 
+import android.app.DatePickerDialog;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,16 +12,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import net.n256coding.calendarapp.Database.TaskDB;
+import net.n256coding.calendarapp.Helper.DateEx;
 import net.n256coding.calendarapp.Models.Task;
 
 import java.text.ParseException;
@@ -28,6 +34,8 @@ import java.util.List;
 
 public class ViewTaskActivity extends AppCompatActivity {
 
+    public static final String TAG = "ViewTaskActivity.java";
+
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
     RecyclerView.LayoutManager layoutManager;
@@ -35,6 +43,9 @@ public class ViewTaskActivity extends AppCompatActivity {
     RadioButton rbOn, rbBetween;
     Button btnFilter;
     TextView tvDate, tvEndDate;
+
+    DatePickerDialog.OnDateSetListener startDateSetListener;
+    DatePickerDialog.OnDateSetListener endDateSetListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,15 +74,10 @@ public class ViewTaskActivity extends AppCompatActivity {
         tvDate = (TextView) findViewById(R.id.tvDate);
         tvEndDate = (TextView) findViewById(R.id.tvEndDate);
 
-
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss");
         relativeLayout_endDate.setVisibility(View.INVISIBLE);
         List<Task> taskList = Task.getAllTasks(ViewTaskActivity.this);
+        setRecyclerViewAdapter(taskList);
 
-        adapter = new DataAdapter(ViewTaskActivity.this, taskList);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -108,6 +114,85 @@ public class ViewTaskActivity extends AppCompatActivity {
                     relativeLayout_endDate.setVisibility(View.INVISIBLE);
             }
         });
+
+        tvDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(ViewTaskActivity.this,
+                        startDateSetListener,
+                        DateEx.getYearOf(null),
+                        DateEx.getMonthOf(null)-1,
+                        DateEx.getDayOf(null));
+                datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                datePickerDialog.show();
+            }
+        });
+
+        tvEndDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(ViewTaskActivity.this,
+                        endDateSetListener,
+                        DateEx.getYearOf(null),
+                        DateEx.getMonthOf(null)-1,
+                        DateEx.getDayOf(null));
+                datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                datePickerDialog.show();
+            }
+        });
+
+        startDateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                tvDate.setText(year + "-" + (month+1) + "-" +day);
+            }
+        };
+
+        endDateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                tvEndDate.setText(year + "-" + (month+1) + "-" + day);
+            }
+        };
+
+        btnFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(rbOn.isChecked()){
+                    String date = null;
+                    try {
+                        date = DateEx.getFormatedDateString(tvDate.getText().toString().trim());
+                    } catch (ParseException e) {
+                        Log.e(TAG, "Error while parsing date on Filter date", e);
+                    }
+                    List<Task> tasks = Task.getTasksByDate(ViewTaskActivity.this, date);
+                    setRecyclerViewAdapter(tasks);
+                }else{
+                    String startDate = null;
+                    try {
+                        startDate = DateEx.getFormatedDateString(tvDate.getText().toString().trim());
+                    } catch (ParseException e) {
+                        Log.e(TAG, "Error while parsing start date", e);
+                    }
+                    String endDate = null;
+                    try {
+                        endDate = DateEx.getFormatedDateString(tvEndDate.getText().toString().trim());
+                    } catch (ParseException e) {
+                        Log.e(TAG, "Error while parsing end date", e);
+                    }
+                    List<Task> tasks = Task.getTasksByDateRange(ViewTaskActivity.this, startDate, endDate);
+                    setRecyclerViewAdapter(tasks);
+                }
+            }
+        });
+
+    }
+
+    private void setRecyclerViewAdapter(List<Task> tasks){
+        adapter = new DataAdapter(ViewTaskActivity.this, tasks);
+        recyclerView.setAdapter(adapter);
+        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.setLayoutManager(layoutManager);
     }
 
 }

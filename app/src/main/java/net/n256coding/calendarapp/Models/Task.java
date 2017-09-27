@@ -2,14 +2,14 @@ package net.n256coding.calendarapp.Models;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.util.Log;
+import android.widget.Toast;
 
 import net.n256coding.calendarapp.Database.TaskDB;
+import net.n256coding.calendarapp.Helper.DateEx;
 
 import java.io.Serializable;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,6 +20,9 @@ import java.util.List;
  */
 
 public class Task implements Serializable{
+    //To be used for android logger
+    private static final String TAG = "Task";
+
     private int task_id;
     private String task_name;
     private String task_description;
@@ -157,10 +160,15 @@ public class Task implements Serializable{
             tempTask.setTask_name(cursor.getString(1));
             tempTask.setTask_description(cursor.getString(2));
 
+
+            try {
                 tempTask.setTask_date(DateEx.getDateOfDate(cursor.getString(3)));
                 tempTask.setTask_start(DateEx.getDateOfTime(cursor.getString(5)));
                 tempTask.setTask_end(DateEx.getDateOfTime(cursor.getString(6)));
-
+                tempTask.setTask_notification_time(DateEx.getDateOfDateTime(cursor.getString(9)));
+            } catch (ParseException e) {
+                Log.e(TAG, "Error while parsing dates for task class", e);
+            }
 /*
                 Calendar taskDate = Calendar.getInstance();
                 Calendar taskNotificationTime = Calendar.getInstance();
@@ -170,7 +178,6 @@ public class Task implements Serializable{
                 taskDate.set(Calendar.MINUTE, taskNotificationTime.get(Calendar.MINUTE));
                 taskDate.set(Calendar.SECOND, taskNotificationTime.get(Calendar.SECOND));
 */
-                tempTask.setTask_notification_time(DateEx.getDateOfDateTime(cursor.getString(9)));
 
             tempTask.setTask_participants(cursor.getString(4));
             tempTask.setTask_location(cursor.getString(7));
@@ -186,20 +193,17 @@ public class Task implements Serializable{
         TaskDB taskDB = new TaskDB(context);
         Cursor cursor = taskDB.selectByTaskId(taskId);
         while (cursor.moveToNext()) {
-            tempTask.setTask_date(DateEx.getDateOfDate(cursor.getString(3)));
-            tempTask.setTask_start(DateEx.getDateOfTime(cursor.getString(5)));
-            tempTask.setTask_end(DateEx.getDateOfTime(cursor.getString(6)));
-
-
-            Calendar taskDate = Calendar.getInstance();
-            Calendar taskNotificationTime = Calendar.getInstance();
-            taskDate.setTime(DateEx.getDateOfDate(cursor.getString(3)));
-            taskNotificationTime.setTime(DateEx.getDateOfTime(cursor.getString(9)));
-            taskDate.set(Calendar.HOUR_OF_DAY, taskNotificationTime.get(Calendar.HOUR_OF_DAY));
-            taskDate.set(Calendar.MINUTE, taskNotificationTime.get(Calendar.MINUTE));
-            taskDate.set(Calendar.SECOND, taskNotificationTime.get(Calendar.SECOND));
-
-            tempTask.setTask_notification_time(taskDate.getTime());
+            tempTask.setTask_id(cursor.getInt(0));
+            tempTask.setTask_name(cursor.getString(1));
+            tempTask.setTask_description(cursor.getString(2));
+            try {
+                tempTask.setTask_date(DateEx.getDateOfDate(cursor.getString(3)));
+                tempTask.setTask_start(DateEx.getDateOfTime(cursor.getString(5)));
+                tempTask.setTask_end(DateEx.getDateOfTime(cursor.getString(6)));
+                tempTask.setTask_notification_time(DateEx.getDateOfDateTime(cursor.getString(9)));
+            } catch (ParseException e) {
+                Log.e(TAG, "Error while parsing dates for task class", e);
+            }
             tempTask.setTask_participants(cursor.getString(4));
             tempTask.setTask_location(cursor.getString(7));
             tempTask.setIs_all_day_task(Boolean.valueOf(cursor.getString(8)));
@@ -208,12 +212,57 @@ public class Task implements Serializable{
         return tempTask;
     }
 
-    public static Task[] getTasksByDate(){
-        return new Task[5];
+    public static List<Task> getTasksByDate(Context context, String dateString){
+        List<Task> tasks = new ArrayList<>();
+        TaskDB taskDB = new TaskDB(context);
+        Cursor cursor = taskDB.selectByDate(dateString);
+        while (cursor.moveToNext()) {
+            Task tempTask = new Task();
+            tempTask.setTask_id(cursor.getInt(0));
+            tempTask.setTask_name(cursor.getString(1));
+            tempTask.setTask_description(cursor.getString(2));
+
+            try {
+                tempTask.setTask_date(DateEx.getDateOfDate(cursor.getString(3)));
+                tempTask.setTask_start(DateEx.getDateOfTime(cursor.getString(5)));
+                tempTask.setTask_end(DateEx.getDateOfTime(cursor.getString(6)));
+                tempTask.setTask_notification_time(DateEx.getDateOfDateTime(cursor.getString(9)));
+            } catch (ParseException e) {
+                Log.e(TAG, "Error while parsing dates for task class", e);
+            }
+            tempTask.setTask_participants(cursor.getString(4));
+            tempTask.setTask_location(cursor.getString(7));
+            tempTask.setIs_all_day_task(Boolean.valueOf(cursor.getString(8)));
+            tempTask.setTask_notification_sound(cursor.getString(10));
+            tasks.add(tempTask);
+        }
+        return tasks;
     }
 
-    public static Task[] getTasksByDateRange(){
-        return new Task[5];
+    public static List<Task> getTasksByDateRange(Context context, String startDateString, String endDateString){
+        List<Task> tasks = new ArrayList<>();
+        TaskDB taskDB = new TaskDB(context);
+        Cursor cursor = taskDB.selectBetweenDate(startDateString, endDateString);
+        while (cursor.moveToNext()) {
+            Task tempTask = new Task();
+            tempTask.setTask_id(cursor.getInt(0));
+            tempTask.setTask_name(cursor.getString(1));
+            tempTask.setTask_description(cursor.getString(2));
+            try {
+                tempTask.setTask_date(DateEx.getDateOfDate(cursor.getString(3)));
+                tempTask.setTask_start(DateEx.getDateOfTime(cursor.getString(5)));
+                tempTask.setTask_end(DateEx.getDateOfTime(cursor.getString(6)));
+                tempTask.setTask_notification_time(DateEx.getDateOfDateTime(cursor.getString(9)));
+            } catch (ParseException e) {
+                Log.e(TAG, "Error while parsing dates for task class", e);
+            }
+            tempTask.setTask_participants(cursor.getString(4));
+            tempTask.setTask_location(cursor.getString(7));
+            tempTask.setIs_all_day_task(Boolean.valueOf(cursor.getString(8)));
+            tempTask.setTask_notification_sound(cursor.getString(10));
+            tasks.add(tempTask);
+        }
+        return tasks;
     }
 
 }

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,9 +23,11 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import net.n256coding.calendarapp.Database.TaskDB;
-import net.n256coding.calendarapp.Models.DateEx;
+import net.n256coding.calendarapp.Helper.DateEx;
+import net.n256coding.calendarapp.Helper.ReminderActivator;
 import net.n256coding.calendarapp.Models.Task;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -39,6 +42,7 @@ public class AddTaskActivity extends AppCompatActivity {
     Button btnAddTask;
 
     int oldTaskId = -1;
+    private static final String TAG = "AddTaskActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,8 +145,8 @@ public class AddTaskActivity extends AppCompatActivity {
 
         dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
-            public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-                String date = i+"-"+(i1+1)+"-"+i2;
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                String date = year+"-"+(month+1)+"-"+day;
                 txtTaskDate.setText(date);
             }
         };
@@ -226,10 +230,22 @@ public class AddTaskActivity extends AppCompatActivity {
                 task.setTask_id(0);
                 task.setTask_name(txtTaskName.getText().toString().trim());
                 task.setTask_location(txtTaskLocation.getText().toString().trim());
-                task.setTask_date(DateEx.getDateOfDate(txtTaskDate.getText().toString().trim()));
+                try {
+                    task.setTask_date(DateEx.getDateOfDate(txtTaskDate.getText().toString().trim()));
+                } catch (ParseException e) {
+                    Log.e(TAG, "Error while date parsing of task_date", e);
+                }
+                try {
+                    task.setTask_start(DateEx.getDateOfTime(txtStartTime.getText().toString().trim()));
+                } catch (ParseException e) {
+                    Log.e(TAG, "Error while date parsing of task_startTime", e);
+                }
+                try {
+                    task.setTask_end(DateEx.getDateOfTime(txtEndTime.getText().toString().trim()));
+                } catch (ParseException e) {
+                    Log.e(TAG, "Error while date parsing of task_endTime", e);
+                }
                 task.setTask_description(txtTaskDescription.getText().toString().trim());
-                task.setTask_start(DateEx.getDateOfTime(txtStartTime.getText().toString().trim()));
-                task.setTask_end(DateEx.getDateOfTime(txtEndTime.getText().toString().trim()));
                 task.setTask_participants(txtTaskParticipants.getText().toString().trim());
                 task.setIs_all_day_task(chkAllDay.isChecked());
                 task.setTask_notification_sound(spinnerSounds.getSelectedItem().toString().trim());
@@ -269,6 +285,7 @@ public class AddTaskActivity extends AppCompatActivity {
                     ReminderActivator.runActivator(AddTaskActivity.this, task);
                     Snackbar.make(view, "Reminder added successfully", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
+                    finish();
                 }
                 else
                     Toast.makeText(AddTaskActivity.this, "Error while inserting data", Toast.LENGTH_LONG).show();

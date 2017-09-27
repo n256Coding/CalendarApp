@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,13 +24,18 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import net.n256coding.calendarapp.Database.TaskDB;
-import net.n256coding.calendarapp.Models.DateEx;
+import net.n256coding.calendarapp.Helper.DateEx;
+import net.n256coding.calendarapp.Helper.ReminderActivator;
 import net.n256coding.calendarapp.Models.Task;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
 public class UpdateTaskActivity extends AppCompatActivity {
+    int oldTaskId;
+    private static final String TAG = "UpdateTaskActivity";
+
     Button btnDone;
     EditText txtTaskName, txtTaskLocation, txtTaskDate, txtStartTime, txtEndTime;
     EditText txtTaskDescription, txtTaskParticipants;
@@ -38,7 +44,6 @@ public class UpdateTaskActivity extends AppCompatActivity {
     Spinner spinnerSounds, spinnerTaskNotificationTime;
     ArrayAdapter<CharSequence> soundList;
     CheckBox chkAllDay;
-    int oldTaskId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,10 +237,14 @@ public class UpdateTaskActivity extends AppCompatActivity {
                 newTask.setTask_id(0);
                 newTask.setTask_name(txtTaskName.getText().toString().trim());
                 newTask.setTask_location(txtTaskLocation.getText().toString().trim());
-                newTask.setTask_date(DateEx.getDateOfDate(txtTaskDate.getText().toString().trim()));
                 newTask.setTask_description(txtTaskDescription.getText().toString().trim());
-                newTask.setTask_start(DateEx.getDateOfTime(txtStartTime.getText().toString().trim()));
-                newTask.setTask_end(DateEx.getDateOfTime(txtEndTime.getText().toString().trim()));
+                try {
+                    newTask.setTask_date(DateEx.getDateOfDate(txtTaskDate.getText().toString().trim()));
+                    newTask.setTask_start(DateEx.getDateOfTime(txtStartTime.getText().toString().trim()));
+                    newTask.setTask_end(DateEx.getDateOfTime(txtEndTime.getText().toString().trim()));
+                } catch (ParseException e) {
+                    Log.e(TAG, "Error while parsing data into  task class", e);
+                }
                 newTask.setTask_participants(txtTaskParticipants.getText().toString().trim());
                 newTask.setIs_all_day_task(chkAllDay.isChecked());
                 newTask.setTask_notification_sound(spinnerSounds.getSelectedItem().toString().trim());

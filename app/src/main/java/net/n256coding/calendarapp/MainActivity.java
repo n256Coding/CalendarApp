@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.Toast;
 
+import net.n256coding.calendarapp.Helper.ReminderActivator;
+
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {

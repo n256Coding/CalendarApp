@@ -36,7 +36,7 @@
         </activity>
         <activity android:name=".ReminderActivity" />
 
-        <receiver android:name=".NotificationReciever" />
+        <receiver android:name=".Helper.NotificationReciever" />
 
         <activity
             android:name=".UpdateTaskActivity"

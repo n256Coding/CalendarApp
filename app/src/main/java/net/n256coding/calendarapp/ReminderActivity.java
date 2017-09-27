@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import net.n256coding.calendarapp.Helper.ReminderActivator;
 import net.n256coding.calendarapp.Models.Task;
 
 public class ReminderActivity extends AppCompatActivity {
