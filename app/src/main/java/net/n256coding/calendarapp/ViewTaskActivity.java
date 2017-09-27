@@ -11,6 +11,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import net.n256coding.calendarapp.Database.TaskDB;
@@ -26,6 +31,10 @@ public class ViewTaskActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
     RecyclerView.LayoutManager layoutManager;
+    RelativeLayout relativeLayout_endDate;
+    RadioButton rbOn, rbBetween;
+    Button btnFilter;
+    TextView tvDate, tvEndDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +56,17 @@ public class ViewTaskActivity extends AppCompatActivity {
         //Controlls Definition
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView_Tasks);
         layoutManager = new LinearLayoutManager(ViewTaskActivity.this);
-
+        relativeLayout_endDate = (RelativeLayout) findViewById(R.id.relativeLayout_endDate);
+        rbOn = (RadioButton) findViewById(R.id.rbOn);
+        rbBetween = (RadioButton) findViewById(R.id.rbBetween);
+        btnFilter = (Button) findViewById(R.id.btnFilter);
+        tvDate = (TextView) findViewById(R.id.tvDate);
+        tvEndDate = (TextView) findViewById(R.id.tvEndDate);
 
 
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss");
+        relativeLayout_endDate.setVisibility(View.INVISIBLE);
         List<Task> taskList = Task.getAllTasks(ViewTaskActivity.this);
 
         adapter = new DataAdapter(ViewTaskActivity.this, taskList);
@@ -81,6 +96,16 @@ public class ViewTaskActivity extends AppCompatActivity {
                 });
                 popupMenu.show();
                 return false;
+            }
+        });
+
+        rbBetween.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if(checked)
+                    relativeLayout_endDate.setVisibility(View.VISIBLE);
+                else
+                    relativeLayout_endDate.setVisibility(View.INVISIBLE);
             }
         });
     }

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,7 +29,8 @@ import net.n256coding.calendarapp.Models.Task;
 import java.util.Calendar;
 import java.util.Date;
 
-public class AddTaskActivity extends AppCompatActivity {
+public class UpdateTaskActivity extends AppCompatActivity {
+    Button btnDone;
     EditText txtTaskName, txtTaskLocation, txtTaskDate, txtStartTime, txtEndTime;
     EditText txtTaskDescription, txtTaskParticipants;
     DatePickerDialog.OnDateSetListener dateSetListener;
@@ -36,20 +38,18 @@ public class AddTaskActivity extends AppCompatActivity {
     Spinner spinnerSounds, spinnerTaskNotificationTime;
     ArrayAdapter<CharSequence> soundList;
     CheckBox chkAllDay;
-    Button btnAddTask;
-
-    int oldTaskId = -1;
+    int oldTaskId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_task);
+        setContentView(R.layout.activity_update_task);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
         //Controllers Definition
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        btnDone = (Button) findViewById(R.id.btnAddTask);
         txtTaskName = (EditText) findViewById(R.id.txtTaskName);
         txtTaskLocation = (EditText) findViewById(R.id.txtLocation);
         txtTaskDate = (EditText) findViewById(R.id.txtTaskDate);
@@ -60,50 +60,55 @@ public class AddTaskActivity extends AppCompatActivity {
         spinnerTaskNotificationTime = (Spinner) findViewById(R.id.spinnerTaskNotificationTime);
         spinnerSounds = (Spinner) findViewById(R.id.spinnerSounds);
         chkAllDay = (CheckBox) findViewById(R.id.chkAllDay);
-        btnAddTask = (Button) findViewById(R.id.btnAddTask);
-
-        //Variable Definition
-        if(getIntent().getExtras().get("oldTaskId") != null)
-            oldTaskId = getIntent().getExtras().getInt("oldTaskId");
-
-
-
-        //if intent to modification
-        if(oldTaskId != -1){
-            TaskDB taskDB = new TaskDB(AddTaskActivity.this);
-            Task tempTask = Task.getTaskById(oldTaskId, AddTaskActivity.this);
-            txtTaskName.setText(tempTask.getTask_name());
-            txtTaskDescription.setText(tempTask.getTask_description());
-            txtTaskParticipants.setText(tempTask.getTask_participants());
-            txtTaskLocation.setText(tempTask.getTask_location());
-            txtTaskDate.setText(DateEx.getDateString(tempTask.getTask_date()));
-            txtStartTime.setText(DateEx.getTimeString(tempTask.getTask_start()));
-            txtEndTime.setText(DateEx.getTimeString(tempTask.getTask_end()));
-
-            btnAddTask.setText("Update");
-        }else{
-            //Variables Definition
-            final long selectedDate = (long)getIntent().getExtras().get("selectedDate");
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date(selectedDate));
-            txtTaskDate.setText(DateEx.getDateString(calendar.getTime()));
-        }
-        soundList = ArrayAdapter.createFromResource(AddTaskActivity.this, R.array.sound_list, R.layout.support_simple_spinner_dropdown_item);
+        soundList = ArrayAdapter.createFromResource(UpdateTaskActivity.this, R.array.sound_list,
+                R.layout.support_simple_spinner_dropdown_item);
         soundList.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinnerSounds.setAdapter(soundList);
 
+        //Variable Definition
+        oldTaskId = getIntent().getExtras().getInt("oldTaskId");
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        btnDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TaskDB taskDB = new TaskDB(UpdateTaskActivity.this);
+                Task tempTask = Task.getTaskById(oldTaskId, UpdateTaskActivity.this);
+                txtTaskName.setText(tempTask.getTask_name());
+                txtTaskDescription.setText(tempTask.getTask_description());
+                txtTaskParticipants.setText(tempTask.getTask_participants());
+                txtTaskLocation.setText(tempTask.getTask_location());
+                txtTaskDate.setText(DateEx.getDateString(tempTask.getTask_date()));
+                txtStartTime.setText(DateEx.getTimeString(tempTask.getTask_start()));
+                txtEndTime.setText(DateEx.getTimeString(tempTask.getTask_end()));
+
+                //Variables Definition
+                final long selectedDate = (long)getIntent().getExtras().get("selectedDate");
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date(selectedDate));
+                txtTaskDate.setText(DateEx.getDateString(calendar.getTime()));
+            }
+        });
 
         txtTaskDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(
-                        AddTaskActivity.this,
+                        UpdateTaskActivity.this,
                         R.style.Theme_AppCompat_DayNight_Dialog,
                         dateSetListener,
                         DateEx.getYearOf(null),
                         DateEx.getMonthOf(null),
                         DateEx.getDayOf(null)
-                        );
+                );
                 datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 datePickerDialog.show();
             }
@@ -114,7 +119,7 @@ public class AddTaskActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 TimePickerDialog timePickerDialog = new TimePickerDialog(
-                        AddTaskActivity.this,
+                        UpdateTaskActivity.this,
                         startTimeSetListener,
                         12,0,
                         false
@@ -129,11 +134,11 @@ public class AddTaskActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 TimePickerDialog timePickerDialog = new TimePickerDialog(
-                        AddTaskActivity.this,
+                        UpdateTaskActivity.this,
                         endTimeSetListener,
                         12, 0,
                         false
-                        );
+                );
                 timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 timePickerDialog.show();
             }
@@ -170,22 +175,22 @@ public class AddTaskActivity extends AppCompatActivity {
                 String soundName = adapterView.getItemAtPosition(i).toString().toLowerCase();
                 switch (soundName){
                     case "buzz" :
-                        mediaPlayer = MediaPlayer.create(AddTaskActivity.this, R.raw.buzz);
+                        mediaPlayer = MediaPlayer.create(UpdateTaskActivity.this, R.raw.buzz);
                         break;
                     case "gets in the way" :
-                        mediaPlayer = MediaPlayer.create(AddTaskActivity.this, R.raw.gets_in_the_way);
+                        mediaPlayer = MediaPlayer.create(UpdateTaskActivity.this, R.raw.gets_in_the_way);
                         break;
                     case "jingle bells" :
-                        mediaPlayer = MediaPlayer.create(AddTaskActivity.this, R.raw.jingle_bells);
+                        mediaPlayer = MediaPlayer.create(UpdateTaskActivity.this, R.raw.jingle_bells);
                         break;
                     case "rooster" :
-                        mediaPlayer = MediaPlayer.create(AddTaskActivity.this, R.raw.rooster);
+                        mediaPlayer = MediaPlayer.create(UpdateTaskActivity.this, R.raw.rooster);
                         break;
                     case "siren" :
-                        mediaPlayer = MediaPlayer.create(AddTaskActivity.this, R.raw.siren);
+                        mediaPlayer = MediaPlayer.create(UpdateTaskActivity.this, R.raw.siren);
                         break;
                     case "system fault" :
-                        mediaPlayer = MediaPlayer.create(AddTaskActivity.this, R.raw.system_fault);
+                        mediaPlayer = MediaPlayer.create(UpdateTaskActivity.this, R.raw.system_fault);
                         break;
                 }
                 if(mediaPlayer != null)
@@ -197,6 +202,7 @@ public class AddTaskActivity extends AppCompatActivity {
 
             }
         });
+
 
         chkAllDay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -215,64 +221,67 @@ public class AddTaskActivity extends AppCompatActivity {
         });
 
 
-        btnAddTask.setOnClickListener(new View.OnClickListener() {
+        btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(oldTaskId != -1){
                     finish();
                     return;
                 }
-                Task task = new Task();
-                task.setTask_id(0);
-                task.setTask_name(txtTaskName.getText().toString().trim());
-                task.setTask_location(txtTaskLocation.getText().toString().trim());
-                task.setTask_date(DateEx.getDateOfDate(txtTaskDate.getText().toString().trim()));
-                task.setTask_description(txtTaskDescription.getText().toString().trim());
-                task.setTask_start(DateEx.getDateOfTime(txtStartTime.getText().toString().trim()));
-                task.setTask_end(DateEx.getDateOfTime(txtEndTime.getText().toString().trim()));
-                task.setTask_participants(txtTaskParticipants.getText().toString().trim());
-                task.setIs_all_day_task(chkAllDay.isChecked());
-                task.setTask_notification_sound(spinnerSounds.getSelectedItem().toString().trim());
+                Task newTask = new Task();
+                newTask.setTask_id(0);
+                newTask.setTask_name(txtTaskName.getText().toString().trim());
+                newTask.setTask_location(txtTaskLocation.getText().toString().trim());
+                newTask.setTask_date(DateEx.getDateOfDate(txtTaskDate.getText().toString().trim()));
+                newTask.setTask_description(txtTaskDescription.getText().toString().trim());
+                newTask.setTask_start(DateEx.getDateOfTime(txtStartTime.getText().toString().trim()));
+                newTask.setTask_end(DateEx.getDateOfTime(txtEndTime.getText().toString().trim()));
+                newTask.setTask_participants(txtTaskParticipants.getText().toString().trim());
+                newTask.setIs_all_day_task(chkAllDay.isChecked());
+                newTask.setTask_notification_sound(spinnerSounds.getSelectedItem().toString().trim());
                 String notify = (String) spinnerTaskNotificationTime.getSelectedItem();
                 switch(notify){
                     case "On time" :
-                        task.setTask_notification_time(task.getTask_start());
+                        newTask.setTask_notification_time(newTask.getTask_start());
                         break;
                     case "Before 2 minutes" :
-                        task.setTask_notification_time(DateEx.addMinutesTo(task.getTask_start(), 2));
+                        newTask.setTask_notification_time(DateEx.addMinutesTo(newTask.getTask_start(), 2));
                         break;
                     case "Before 5 minutes" :
-                        task.setTask_notification_time(DateEx.addMinutesTo(task.getTask_start(), 5));
+                        newTask.setTask_notification_time(DateEx.addMinutesTo(newTask.getTask_start(), 5));
                         break;
                     case "Before 10 minutes" :
-                        task.setTask_notification_time(DateEx.addMinutesTo(task.getTask_start(), 10));
+                        newTask.setTask_notification_time(DateEx.addMinutesTo(newTask.getTask_start(), 10));
                         break;
                     case "Before 30 minutes" :
-                        task.setTask_notification_time(DateEx.addMinutesTo(task.getTask_start(), 30));
+                        newTask.setTask_notification_time(DateEx.addMinutesTo(newTask.getTask_start(), 30));
                         break;
                     case "Before 1 hour" :
-                        task.setTask_notification_time(DateEx.addMinutesTo(task.getTask_start(), 60));
+                        newTask.setTask_notification_time(DateEx.addMinutesTo(newTask.getTask_start(), 60));
                         break;
                     case "Before 3 hours" :
-                        task.setTask_notification_time(DateEx.addMinutesTo(task.getTask_start(), 180));
+                        newTask.setTask_notification_time(DateEx.addMinutesTo(newTask.getTask_start(), 180));
                         break;
                     case "Before 1 day" :
-                        task.setTask_notification_time(DateEx.addMinutesTo(task.getTask_start(), 1440));
+                        newTask.setTask_notification_time(DateEx.addMinutesTo(newTask.getTask_start(), 1440));
                         break;
                     default:
-                        task.setTask_notification_time(task.getTask_start());
+                        newTask.setTask_notification_time(newTask.getTask_start());
                         break;
                 }
 
-                TaskDB taskDB = new TaskDB(AddTaskActivity.this);
-                if(taskDB.insert(task)){
-                    ReminderActivator.runActivator(AddTaskActivity.this, task);
-                    Snackbar.make(view, "Reminder added successfully", Snackbar.LENGTH_LONG)
+                TaskDB taskDB = new TaskDB(UpdateTaskActivity.this);
+                if(taskDB.update(newTask, oldTaskId)){
+                    ReminderActivator.suspendReminder(UpdateTaskActivity.this,
+                            Task.getTaskById(oldTaskId, UpdateTaskActivity.this));
+                    ReminderActivator.runActivator(UpdateTaskActivity.this, newTask);
+                    Snackbar.make(view, "Reminder updated successfully", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
                 else
-                    Toast.makeText(AddTaskActivity.this, "Error while inserting data", Toast.LENGTH_LONG).show();
+                    Toast.makeText(UpdateTaskActivity.this, "Error while inserting data", Toast.LENGTH_LONG).show();
             }
         });
     }
+
 }

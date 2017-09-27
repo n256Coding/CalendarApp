@@ -34,8 +34,19 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.n256coding.calendarapp.MainActivity" />
         </activity>
-        <activity android:name=".ReminderActivity"></activity>
-        <receiver android:name=".NotificationReciever"/>
+        <activity android:name=".ReminderActivity" />
+
+        <receiver android:name=".NotificationReciever" />
+
+        <activity
+            android:name=".UpdateTaskActivity"
+            android:label="@string/title_activity_update_task"
+            android:parentActivityName=".ViewTaskActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.n256coding.calendarapp.ViewTaskActivity" />
+        </activity>
     </application>
 
 </manifest>

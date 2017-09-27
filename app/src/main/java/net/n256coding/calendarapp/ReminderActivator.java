@@ -23,7 +23,7 @@ import java.util.List;
 
 public abstract class ReminderActivator {
 
-    public static void RunActivator(Context context){
+    public static void runActivator(Context context){
         List<Task> tasks = Task.getAllTasks(context);
         for (Task task : tasks) {
             Intent intent = new Intent(context, NotificationReciever.class);
@@ -37,7 +37,7 @@ public abstract class ReminderActivator {
         }
     }
 
-    public static void RunActivator(Context context, Task task){
+    public static void runActivator(Context context, Task task){
         Intent intent = new Intent(context, NotificationReciever.class);
         intent.putExtra("ui", new Intent(context, ReminderActivity.class));
         intent.putExtra("task", task);
@@ -47,7 +47,7 @@ public abstract class ReminderActivator {
         alarmManager.set(AlarmManager.RTC_WAKEUP, task.getTask_notification_time().getTime(), pendingIntent);
     }
 
-    public static void PostponeReminder(Context context, Task task, int minutes){
+    public static void postponeReminder(Context context, Task task, int minutes){
         Intent intent = new Intent(context, NotificationReciever.class);
         intent.putExtra("ui", new Intent(context, ReminderActivity.class));
         intent.putExtra("task", task);
@@ -59,7 +59,7 @@ public abstract class ReminderActivator {
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 
-    public static void ChangeReminder(Context context, Task task, int minutes){
+    public static void changeReminder(Context context, Task task, int minutes){
         Intent intent = new Intent(context, NotificationReciever.class);
         intent.putExtra("ui", new Intent(context, ReminderActivity.class));
         intent.putExtra("task", task);
@@ -71,8 +71,8 @@ public abstract class ReminderActivator {
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 
-    //TODO RunActivator_TEST
-    public static void RunActivator_TEST(Context context){
+    //TODO runActivatorTEST
+    public static void runActivatorTEST(Context context){
         Intent intent = new Intent(context, NotificationReciever.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, intent, 0);
 
@@ -81,7 +81,7 @@ public abstract class ReminderActivator {
         Toast.makeText(context, "Alarm set to 5 seconds", Toast.LENGTH_SHORT).show();
     }
 
-    public static void SuspendReminder(Context context, Task task){
+    public static void suspendReminder(Context context, Task task){
         Intent intent = new Intent(context, NotificationReciever.class);
         intent.putExtra("ui", new Intent(context, ReminderActivity.class));
         intent.putExtra("task", task);

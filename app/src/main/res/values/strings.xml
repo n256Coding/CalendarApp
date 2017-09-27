@@ -22,4 +22,5 @@
         <item>Before 1 day</item>
     </string-array>
     <string name="title_activity_view_task">ViewTaskActivity</string>
+    <string name="title_activity_update_task">Change Task</string>
 </resources>

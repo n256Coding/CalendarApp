@@ -61,12 +61,12 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
                         if(item.getItemId() == R.id.menuItem_editTask){
                             Toast.makeText(context, "Ready to modify", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(context, AddTaskActivity.class);
-                            intent.putExtra("taskId", taskId);
+                            intent.putExtra("oldTaskId", taskId);
                             context.startActivity(intent);
                         }else if(item.getItemId() == R.id.menuItem_removeTask){
                             TaskDB taskDB = new TaskDB(context);
                             if(taskDB.delete(taskId)){
-                                ReminderActivator.SuspendReminder(context, tasks.get(position));
+                                ReminderActivator.suspendReminder(context, tasks.get(position));
                                 tasks.remove(position);
                                 notifyItemRemoved(position);
                                 Toast.makeText(context, "Task Removed", Toast.LENGTH_SHORT).show();

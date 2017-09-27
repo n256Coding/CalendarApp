@@ -18,13 +18,13 @@ public class ReminderActivity extends AppCompatActivity {
 
     public void RemindMeAgain(View view){
         Task task = (Task)getIntent().getSerializableExtra("task");
-        ReminderActivator.PostponeReminder(ReminderActivity.this, task, 1);
+        ReminderActivator.postponeReminder(ReminderActivity.this, task, 1);
         finish();
     }
 
     public void StopReminder(View view){
         Task task = (Task)getIntent().getSerializableExtra("task");
-        ReminderActivator.SuspendReminder(ReminderActivity.this, task);
+        ReminderActivator.suspendReminder(ReminderActivity.this, task);
         finish();
     }
 }
