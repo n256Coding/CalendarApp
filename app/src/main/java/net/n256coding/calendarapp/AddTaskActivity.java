@@ -66,13 +66,16 @@ public class AddTaskActivity extends AppCompatActivity {
         chkAllDay = (CheckBox) findViewById(R.id.chkAllDay);
         btnAddTask = (Button) findViewById(R.id.btnAddTask);
 
+//TODO - Deprecated need to remove
+/*
         //Variable Definition
         if(getIntent().getExtras().get("oldTaskId") != null)
             oldTaskId = getIntent().getExtras().getInt("oldTaskId");
+*/
 
-
-
+//TODO - Deprecated need to remove
         //if intent to modification
+        /*
         if(oldTaskId != -1){
             TaskDB taskDB = new TaskDB(AddTaskActivity.this);
             Task tempTask = Task.getTaskById(oldTaskId, AddTaskActivity.this);
@@ -85,13 +88,13 @@ public class AddTaskActivity extends AppCompatActivity {
             txtEndTime.setText(DateEx.getTimeString(tempTask.getTask_end()));
 
             btnAddTask.setText("Update");
-        }else{
+        }else{*/
             //Variables Definition
             final long selectedDate = (long)getIntent().getExtras().get("selectedDate");
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date(selectedDate));
             txtTaskDate.setText(DateEx.getDateString(calendar.getTime()));
-        }
+        //}
         soundList = ArrayAdapter.createFromResource(AddTaskActivity.this, R.array.sound_list, R.layout.support_simple_spinner_dropdown_item);
         soundList.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinnerSounds.setAdapter(soundList);
@@ -280,15 +283,19 @@ public class AddTaskActivity extends AppCompatActivity {
                         break;
                 }
 
-                TaskDB taskDB = new TaskDB(AddTaskActivity.this);
-                if(taskDB.insert(task)){
-                    ReminderActivator.runActivator(AddTaskActivity.this, task);
-                    Snackbar.make(view, "Reminder added successfully", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                    finish();
+                if(task.getTask_notification_time().before(new Date())){
+                    Snackbar.make(view, "Cannot set reminders for past events", Snackbar.LENGTH_LONG)
+                            .setAction("OK", null).show();
+                }else{
+                    TaskDB taskDB = new TaskDB(AddTaskActivity.this);
+                    if(taskDB.insert(task)){
+                        ReminderActivator.runActivator(AddTaskActivity.this, task);
+                        Toast.makeText(AddTaskActivity.this, "Reminder added successfully", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                    else
+                        Toast.makeText(AddTaskActivity.this, "Error while saving reminder", Toast.LENGTH_LONG).show();
                 }
-                else
-                    Toast.makeText(AddTaskActivity.this, "Error while inserting data", Toast.LENGTH_LONG).show();
             }
         });
     }

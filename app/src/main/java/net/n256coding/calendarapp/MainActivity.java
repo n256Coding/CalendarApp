@@ -36,20 +36,6 @@ public class MainActivity extends AppCompatActivity {
         //TODO Test button defined, Remove when needed
         btnTest = (Button) findViewById(R.id.btnTest);
 
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
-                Toast.makeText(getApplicationContext(), i+"/"+(i1+1)+"/"+i2, Toast.LENGTH_LONG).show();
-            }
-        });
-
-        calendarView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Toast.makeText(getApplicationContext(), "Long press", Toast.LENGTH_LONG).show();
-                return true;
-            }
-        });
 
         /*
         calendarView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
@@ -72,7 +58,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intentViewTask = new Intent(MainActivity.this, ViewTaskActivity.class);
+                intentViewTask.putExtra("selectedDate", calendarView.getDate());
                 startActivity(intentViewTask);
+            }
+        });
+
+        btnViewTask.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Intent intentViewTask = new Intent(MainActivity.this, ViewTaskActivity.class);
+                startActivity(intentViewTask);
+                return false;
             }
         });
 

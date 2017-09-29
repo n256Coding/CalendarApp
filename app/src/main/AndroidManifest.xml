@@ -34,7 +34,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.n256coding.calendarapp.MainActivity" />
         </activity>
-        <activity android:name=".ReminderActivity" />
+        <activity android:name=".ReminderActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"/>
 
         <receiver android:name=".Helper.NotificationReciever" />
 

@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import net.n256coding.calendarapp.AddTaskActivity;
+import net.n256coding.calendarapp.Helper.DateEx;
 import net.n256coding.calendarapp.Models.Task;
 
 /**
@@ -67,14 +68,14 @@ public class TaskDB extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put("task_name", task.getTask_name());
         contentValues.put("task_location", task.getTask_location());
-        contentValues.put("task_date", sdf.format(task.getTask_date()));
+        contentValues.put("task_date", DateEx.getDateString(task.getTask_date()));
         contentValues.put("task_description", task.getTask_description());
         contentValues.put("task_participants", task.getTask_participants());
-        contentValues.put("task_start", sdfTime.format(task.getTask_start()));
-        contentValues.put("task_end", sdfTime.format(task.getTask_end()));
+        contentValues.put("task_start", DateEx.getTimeString(task.getTask_start()));
+        contentValues.put("task_end", DateEx.getTimeString(task.getTask_end()));
         contentValues.put("task_location", task.getTask_location());
         contentValues.put("is_all_day_task", task.is_all_day_task());
-        contentValues.put("task_notification_time", sdfTime.format(task.getTask_notification_time()));
+        contentValues.put("task_notification_time", DateEx.getDateTimeString(task.getTask_notification_time()));
         contentValues.put("notification_sound", task.getTask_notification_sound());
 
         long insertedResult = db.insert(TABLE_NAME, null, contentValues);
@@ -91,7 +92,15 @@ public class TaskDB extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put("task_name", newTask.getTask_name());
         contentValues.put("task_location", newTask.getTask_location());
-        contentValues.put("task_date", sdf.format(newTask.getTask_date()));
+        contentValues.put("task_date", DateEx.getDateString(newTask.getTask_date()));
+        contentValues.put("task_description", newTask.getTask_description());
+        contentValues.put("task_participants", newTask.getTask_participants());
+        contentValues.put("task_start", DateEx.getTimeString(newTask.getTask_start()));
+        contentValues.put("task_end", DateEx.getTimeString(newTask.getTask_end()));
+        contentValues.put("task_location", newTask.getTask_location());
+        contentValues.put("is_all_day_task", newTask.is_all_day_task());
+        contentValues.put("task_notification_time", DateEx.getDateTimeString(newTask.getTask_notification_time()));
+        contentValues.put("notification_sound", newTask.getTask_notification_sound());
         String selection = COL_1 + " = ?";
         String[] selectionArgs = {String.valueOf(oldTaskId)};
         long updateResult = db.update(TABLE_NAME, contentValues, selection, selectionArgs);

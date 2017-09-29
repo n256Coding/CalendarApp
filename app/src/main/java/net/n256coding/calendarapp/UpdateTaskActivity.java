@@ -73,6 +73,18 @@ public class UpdateTaskActivity extends AppCompatActivity {
         //Variable Definition
         oldTaskId = getIntent().getExtras().getInt("oldTaskId");
 
+        //Assign old task data into ui
+        TaskDB taskDB = new TaskDB(UpdateTaskActivity.this);
+        Task tempTask = Task.getTaskById(oldTaskId, UpdateTaskActivity.this);
+        txtTaskName.setText(tempTask.getTask_name());
+        txtTaskDescription.setText(tempTask.getTask_description());
+        txtTaskParticipants.setText(tempTask.getTask_participants());
+        txtTaskLocation.setText(tempTask.getTask_location());
+        txtTaskDate.setText(DateEx.getDateString(tempTask.getTask_date()));
+        txtStartTime.setText(DateEx.getTimeString(tempTask.getTask_start()));
+        txtEndTime.setText(DateEx.getTimeString(tempTask.getTask_end()));
+        txtTaskDate.setText(DateEx.getDateString(tempTask.getTask_date()));
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,27 +93,6 @@ public class UpdateTaskActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        btnDone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TaskDB taskDB = new TaskDB(UpdateTaskActivity.this);
-                Task tempTask = Task.getTaskById(oldTaskId, UpdateTaskActivity.this);
-                txtTaskName.setText(tempTask.getTask_name());
-                txtTaskDescription.setText(tempTask.getTask_description());
-                txtTaskParticipants.setText(tempTask.getTask_participants());
-                txtTaskLocation.setText(tempTask.getTask_location());
-                txtTaskDate.setText(DateEx.getDateString(tempTask.getTask_date()));
-                txtStartTime.setText(DateEx.getTimeString(tempTask.getTask_start()));
-                txtEndTime.setText(DateEx.getTimeString(tempTask.getTask_end()));
-
-                //Variables Definition
-                final long selectedDate = (long)getIntent().getExtras().get("selectedDate");
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(new Date(selectedDate));
-                txtTaskDate.setText(DateEx.getDateString(calendar.getTime()));
-            }
-        });
 
         txtTaskDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -229,10 +220,6 @@ public class UpdateTaskActivity extends AppCompatActivity {
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(oldTaskId != -1){
-                    finish();
-                    return;
-                }
                 Task newTask = new Task();
                 newTask.setTask_id(0);
                 newTask.setTask_name(txtTaskName.getText().toString().trim());
@@ -243,7 +230,7 @@ public class UpdateTaskActivity extends AppCompatActivity {
                     newTask.setTask_start(DateEx.getDateOfTime(txtStartTime.getText().toString().trim()));
                     newTask.setTask_end(DateEx.getDateOfTime(txtEndTime.getText().toString().trim()));
                 } catch (ParseException e) {
-                    Log.e(TAG, "Error while parsing data into  task class", e);
+                    Log.e(TAG, "Error while parsing data into task class", e);
                 }
                 newTask.setTask_participants(txtTaskParticipants.getText().toString().trim());
                 newTask.setIs_all_day_task(chkAllDay.isChecked());
@@ -284,11 +271,13 @@ public class UpdateTaskActivity extends AppCompatActivity {
                     ReminderActivator.suspendReminder(UpdateTaskActivity.this,
                             Task.getTaskById(oldTaskId, UpdateTaskActivity.this));
                     ReminderActivator.runActivator(UpdateTaskActivity.this, newTask);
-                    Snackbar.make(view, "Reminder updated successfully", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    Toast.makeText(UpdateTaskActivity.this, "Reminder updated successfully", Toast.LENGTH_LONG).show();
+                    finish();
                 }
-                else
-                    Toast.makeText(UpdateTaskActivity.this, "Error while inserting data", Toast.LENGTH_LONG).show();
+                else{
+                    Toast.makeText(UpdateTaskActivity.this, "Error while updating..", Toast.LENGTH_LONG).show();
+                    Log.w(TAG, "Error got while updating taskId: "+oldTaskId);
+                }
             }
         });
     }

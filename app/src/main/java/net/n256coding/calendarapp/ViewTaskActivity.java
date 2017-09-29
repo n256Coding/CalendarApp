@@ -30,6 +30,7 @@ import net.n256coding.calendarapp.Models.Task;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ViewTaskActivity extends AppCompatActivity {
@@ -40,12 +41,13 @@ public class ViewTaskActivity extends AppCompatActivity {
     RecyclerView.Adapter adapter;
     RecyclerView.LayoutManager layoutManager;
     RelativeLayout relativeLayout_endDate;
-    RadioButton rbOn, rbBetween;
+    RadioButton rbOn, rbBetween, rbAll;
     Button btnFilter;
     TextView tvDate, tvEndDate;
 
     DatePickerDialog.OnDateSetListener startDateSetListener;
     DatePickerDialog.OnDateSetListener endDateSetListener;
+    List<Task> taskList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,14 +72,28 @@ public class ViewTaskActivity extends AppCompatActivity {
         relativeLayout_endDate = (RelativeLayout) findViewById(R.id.relativeLayout_endDate);
         rbOn = (RadioButton) findViewById(R.id.rbOn);
         rbBetween = (RadioButton) findViewById(R.id.rbBetween);
+        rbAll = (RadioButton) findViewById(R.id.rbAll);
         btnFilter = (Button) findViewById(R.id.btnFilter);
         tvDate = (TextView) findViewById(R.id.tvDate);
         tvEndDate = (TextView) findViewById(R.id.tvEndDate);
 
+
+        if(!getIntent().hasExtra("selectedDate")){
+            taskList = Task.getAllTasks(ViewTaskActivity.this);
+            rbAll.setChecked(true);
+            tvDate.setText(DateEx.getDateString(new Date()));
+            tvDate.setVisibility(View.INVISIBLE);
+        }
+        else{
+            String date = DateEx.getDateString(new Date(getIntent().getExtras().getLong("selectedDate")));
+            taskList = Task.getTasksByDate(ViewTaskActivity.this, date);
+            tvDate.setText(date);
+        }
         relativeLayout_endDate.setVisibility(View.INVISIBLE);
-        List<Task> taskList = Task.getAllTasks(ViewTaskActivity.this);
         setRecyclerViewAdapter(taskList);
 
+        //TODO Deprecated - Need to remove
+        /*
         recyclerView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -104,14 +120,36 @@ public class ViewTaskActivity extends AppCompatActivity {
                 return false;
             }
         });
+        */
 
         rbBetween.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                if(checked)
+                if(checked){
+                    tvDate.setVisibility(View.VISIBLE);
                     relativeLayout_endDate.setVisibility(View.VISIBLE);
-                else
+                    tvEndDate.setText(DateEx.getDateString(new Date()));
+                }
+            }
+        });
+
+        rbAll.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if(checked){
                     relativeLayout_endDate.setVisibility(View.INVISIBLE);
+                    tvDate.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        rbOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if(checked){
+                    relativeLayout_endDate.setVisibility(View.INVISIBLE);
+                    tvDate.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -167,7 +205,7 @@ public class ViewTaskActivity extends AppCompatActivity {
                     }
                     List<Task> tasks = Task.getTasksByDate(ViewTaskActivity.this, date);
                     setRecyclerViewAdapter(tasks);
-                }else{
+                }else if(rbBetween.isChecked()){
                     String startDate = null;
                     try {
                         startDate = DateEx.getFormatedDateString(tvDate.getText().toString().trim());
@@ -182,6 +220,9 @@ public class ViewTaskActivity extends AppCompatActivity {
                     }
                     List<Task> tasks = Task.getTasksByDateRange(ViewTaskActivity.this, startDate, endDate);
                     setRecyclerViewAdapter(tasks);
+                }else {
+                    List<Task> tasks = Task.getAllTasks(ViewTaskActivity.this);
+                    setRecyclerViewAdapter(tasks);
                 }
             }
         });
@@ -191,7 +232,7 @@ public class ViewTaskActivity extends AppCompatActivity {
     private void setRecyclerViewAdapter(List<Task> tasks){
         adapter = new DataAdapter(ViewTaskActivity.this, tasks);
         recyclerView.setAdapter(adapter);
-        recyclerView.getAdapter().notifyDataSetChanged();
+        //recyclerView.getAdapter().notifyDataSetChanged();
         recyclerView.setLayoutManager(layoutManager);
     }
 

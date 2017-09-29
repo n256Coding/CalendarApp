@@ -1,7 +1,10 @@
 package net.n256coding.calendarapp;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.n256coding.calendarapp.Database.TaskDB;
+import net.n256coding.calendarapp.Helper.DateEx;
 import net.n256coding.calendarapp.Helper.ReminderActivator;
 import net.n256coding.calendarapp.Models.Task;
 
@@ -37,43 +41,74 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
-        holder.txtTaskName.setText(tasks.get(position).getTask_name());
-        holder.txtTaskLocation.setText(tasks.get(position).getTask_location());
-        holder.txtTaskDate.setText(tasks.get(position).getTask_date().toString());
-        holder.txtTaskStartTime.setText(tasks.get(position).getTask_start().toString());
-        final String taskName = tasks.get(position).getTask_name();
-        final int taskId = tasks.get(position).getTask_id();
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
+        Task task = tasks.get(holder.getAdapterPosition());
+        holder.txtTaskName.setText(task.getTask_name());
+        holder.txtTaskLocation.setText(task.getTask_location());
+        holder.txtTaskDate.setText(task.getTask_date().toString());
+        holder.txtTaskStartTime.setText(task.getTask_start().toString());
+        final String taskName = task.getTask_name();
+        final int taskId = task.getTask_id();
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, taskName, Toast.LENGTH_SHORT).show();
+                final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                Task task = tasks.get(holder.getAdapterPosition());
+
+                String description = task.getTask_description()+
+                        "\nLocation: "+task.getTask_location()+
+                        "\nOn: "+ DateEx.getDateString(task.getTask_date());
+                    if(task.is_all_day_task()){
+                        description = description
+                                +"\nIn whole day.";
+                    }else{
+                        description = description
+                                +"\nFrom: "+DateEx.getTimeString(task.getTask_start())+" to "+DateEx.getTimeString(task.getTask_end())+".";
+                    }
+                    if(task.getTask_participants().length() > 0){
+                        description = description
+                                +"\n"+task.getTask_participants()+" will be with you!";
+                    }
+
+                alertDialog.setTitle(task.getTask_name())
+                        .setCancelable(true)
+                        .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        })
+                        .setMessage(description);
+                alertDialog.show();
             }
         });
+
         holder.view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public boolean onLongClick(View view) {
+            public boolean onLongClick(final View view) {
                 PopupMenu popupMenu = new PopupMenu(context, view);
                 popupMenu.getMenuInflater().inflate(R.menu.menu_add_remove, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         if(item.getItemId() == R.id.menuItem_editTask){
-                            Toast.makeText(context, "Ready to modify", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(context, AddTaskActivity.class);
+                            Intent intent = new Intent(context, UpdateTaskActivity.class);
                             intent.putExtra("oldTaskId", taskId);
                             context.startActivity(intent);
+                            notifyItemChanged(holder.getAdapterPosition());
                         }else if(item.getItemId() == R.id.menuItem_removeTask){
                             TaskDB taskDB = new TaskDB(context);
                             if(taskDB.delete(taskId)){
-                                ReminderActivator.suspendReminder(context, tasks.get(position));
-                                tasks.remove(position);
-                                notifyItemRemoved(position);
-                                Toast.makeText(context, "Task Removed", Toast.LENGTH_SHORT).show();
+                                ReminderActivator.suspendReminder(context, tasks.get(holder.getAdapterPosition()));
+                                tasks.remove(holder.getAdapterPosition());
+                                notifyItemRemoved(holder.getAdapterPosition());
+                                Snackbar.make(view, "Task Removed", Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
                             }
                             else{
-                                Toast.makeText(context, "Task not Removed", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(view, "Task not removed", Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
                             }
                         }
                         return false;
